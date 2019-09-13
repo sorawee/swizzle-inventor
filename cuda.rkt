@@ -283,6 +283,9 @@
 
     [else (f x)]))
 
+(define (all-split? x f)
+  (for/all ([x x #:exhaustive]) (all? x f)))
+
 (define (size-of x)
    (cond
     [(vector? x)
@@ -307,8 +310,8 @@
       [(member op (list @+ @-))
        (cond
          [(all? (first args) zero?) 0]
-         [(for/all ([val (second args) #:exhaustive]) (all? val zero?)) 0]
-         [(for/all ([ret ret #:exhaustive]) (all? ret zero?)) 0]
+         [(all-split? (second args) zero?) 0]
+         [(all? ret zero?) 0]
          [else op-cost])]
 
       [(member op (list @modulo))
@@ -318,7 +321,7 @@
       
       [(member op (list @*))
        (cond
-         [(all? (first args) zero?) 0]
+         [(all-split? (first args) zero?) 0]
          [(all? (first args) one?) 0]
          [(all? (first args) minus-one?) 0]
          [(all? (second args) zero?) 0]
