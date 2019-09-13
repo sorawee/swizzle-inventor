@@ -307,8 +307,8 @@
       [(member op (list @+ @-))
        (cond
          [(all? (first args) zero?) 0]
-         [(all? (second args) zero?) 0]
-         [(all? ret zero?) 0]
+         [(for/all ([val (second args) #:exhaustive]) (all? val zero?)) 0]
+         [(for/all ([ret ret #:exhaustive]) (all? ret zero?)) 0]
          [else op-cost])]
 
       [(member op (list @modulo))
@@ -790,7 +790,8 @@
 
 ;; Accumulator equal
 (define (acc=? x y recursive-equal?)
-  (and (multiset= (accumulator-val x) (accumulator-val y))
+  (and (for/all ([val (accumulator-val y) #:exhaustive])
+         (multiset= (accumulator-val x) val))
        (equal? (accumulator-oplist x) (accumulator-oplist y))
        (equal? (accumulator-opfinal x) (accumulator-opfinal y))))
 
